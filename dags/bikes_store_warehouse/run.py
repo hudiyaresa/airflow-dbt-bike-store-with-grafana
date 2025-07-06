@@ -1,4 +1,4 @@
-from airflow.decorators import task
+from airflow.decorators import dag, task
 from airflow.models import Variable
 from cosmos import DbtDag, DbtTaskGroup
 from datetime import datetime
@@ -42,46 +42,39 @@ default_args = {
     "on_failure_callback": slack_notifier
 }
 
-dag = DbtDag(
+@dag(
     dag_id="bikes_store_warehouse",
     description="Transform data into warehouse",
     schedule=None,
     start_date=datetime(2024, 9, 1),
     catchup=False,
-    project_config=project_config,
-    profile_config=profile_config,
-    render_config=render_config,
     default_args=default_args
 )
 
 def bikes_store_warehouse():
-    @task.branch(dag=dag)
+    @task.branch
     def check_is_warehouse_init():
         is_init = Variable.get("BIKES_STORE_WAREHOUSE_INIT", default_var="False").lower()
         return "warehouse" if is_init == "false" else "warehouse_init"
 
-    def warehouse_init():
-        return DbtTaskGroup(
+    warehouse_init = DbtTaskGroup(
             group_id="warehouse_init",
             project_config=project_config,
             profile_config=profile_config,
-            render_config=render_config_init,
+            render_config=render_config_init
             # install_dbt_deps=True,  # Install deps
-            dag=dag,
         )
 
-    def warehouse():
-        return DbtTaskGroup(
+    warehouse = DbtTaskGroup(
             group_id="warehouse",
             project_config=project_config,
             profile_config=profile_config,
-            render_config=render_config,
+            render_config=render_config
             # install_deps=True,
             # exclude=["dim_date_seed"],
-            dag=dag,
         )
 
-    check_is_warehouse_init() >> [warehouse_init(), warehouse()]
+    check_is_warehouse_init() >> [warehouse_init, warehouse]
 
 # Run the DAG
 bikes_store_warehouse()
