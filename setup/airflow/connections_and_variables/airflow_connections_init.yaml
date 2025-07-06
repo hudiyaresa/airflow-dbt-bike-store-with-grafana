@@ -1,0 +1,45 @@
+bikes-store-api:
+  conn_type: http
+  description: bikes store api
+  extra: ''
+  host: https://api-currency-five.vercel.app/api/currencydata
+  login: ''
+  password: null
+  port: null
+  schema: ''
+bikes_store_db:
+  conn_type: postgres
+  description: bikes store data source
+  extra: ''
+  host: bikes_store_db
+  login: postgres
+  password: postgres
+  port: 5432
+  schema: bikes_store_db
+s3-conn:
+  conn_type: aws
+  description: Koneksi ke minio / s3 (data lake)
+  extra: '{"endpoint_url": "http://minio:9000"}'
+  host: ''
+  login: minio
+  password: minio123
+  port: null
+  schema: ''
+slack_conn:
+  conn_type: slack
+  description: Alerting
+  extra: '{"timeout": null}'
+  host: ''
+  login: ''
+  password:                         # Fill the token here
+  port: null
+  schema: ''
+bikes_store_warehouse:
+  conn_type: postgres
+  description: Koneksi ke data warehouse
+  extra: '{}'
+  host: bikes_store_warehouse
+  login: postgres
+  password: postgres
+  port: 5432
+  schema: bikes_store_warehouse

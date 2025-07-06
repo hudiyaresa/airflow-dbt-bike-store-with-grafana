@@ -1,0 +1,95 @@
+{
+    "BIKES_STORE_API_URL": "https://api-currency-five.vercel.app/api/currencydata",
+    "BIKES_STORE_STAGING_INCREMENTAL_MODE": "False",
+    "BIKES_STORE_WAREHOUSE_INIT": "True",
+    "BIKES_STORE_STAGING__table_to_extract_and_load": {
+        "person": [
+          "person",
+          "businessentityid"
+        ],
+        "employee": [
+          "humanresources",
+          "businessentityid"
+        ],
+        "product": [
+          "production",
+          "productid"
+        ],
+        "shipmethod": [
+          "purchasing",
+          "shipmethodid"
+        ],
+        "currencyrate": [
+          "sales",
+          "currencyrateid"
+        ],
+        "salesreason": [
+          "sales",
+          "salesreasonid"
+        ],
+        "salesterritory": [
+          "sales",
+          "territoryid"
+        ],
+        "specialoffer": [
+          "sales",
+          "specialofferid"
+        ],
+        "salesperson": [
+          "sales",
+          "businessentityid"
+        ],
+        "store": [
+          "sales",
+          "businessentityid"
+        ],
+        "customer": [
+          "sales",
+          "customerid"
+        ],
+        "specialofferproduct": [
+          "sales",
+          [
+            "specialofferid",
+            "productid"
+          ]
+        ],
+        "salespersonquotahistory": [
+          "sales",
+          [
+            "businessentityid",
+            "quotadate"
+          ]
+        ],
+        "salesterritoryhistory": [
+          "sales",
+          [
+            "businessentityid",
+            "territoryid",
+            "startdate"
+          ]
+        ],
+        "shoppingcartitem": [
+          "sales",
+          "shoppingcartitemid"
+        ],
+        "salesorderheader": [
+          "sales",
+          "salesorderid"
+        ],
+        "salesorderdetail": [
+          "sales",
+          [
+            "salesorderid",
+            "salesorderdetailid"
+          ]
+        ],
+        "salesorderheadersalesreason": [
+          "sales",
+          [
+            "salesorderid",
+            "salesreasonid"
+          ]
+        ]
+    }
+}

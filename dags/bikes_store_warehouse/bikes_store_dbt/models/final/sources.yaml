@@ -1,0 +1,24 @@
+version 2:
+
+sources:
+  - name: bikes_store_staging
+    database: postgres
+    schema: bikes_store_staging
+    tables:
+      - name: currency
+      - name: salesterritory
+      - name: salesperson
+      - name: employee
+      - name: person
+      - name: product
+      - name: store
+      - name: customer
+      - name: shipmethod
+      - name: specialoffer
+      - name: salesorderheader
+      - name: salesorderdetail
+      - name: salesreason
+      - name: currencyrate
+      - name: salespersonquotahistory
+      - name: salesterritoryhistory
+      - name: salesorderheadersalesreason

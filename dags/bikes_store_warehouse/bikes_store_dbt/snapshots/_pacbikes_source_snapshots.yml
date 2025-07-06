@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: bikes_store_staging_snapshot
+    database: postgres
+    schema: bikes_store_staging
+    tables:
+      - name: product

@@ -1,0 +1,221 @@
+version: 2
+
+seeds:
+  - name: dim_date
+    description: "Dimension table for dates table"
+    columns:
+      - name: date_id
+        description: "Primary Key for dim_date"
+        tests:
+          - not_null
+          - dbt_constraints.primary_key
+models:
+  - name: dim_currency
+    description: "Dimension table from currency staging"
+    columns:
+      - name: currency_code
+        description: "Primary key for currency"
+        tests:
+          - not_null
+          - dbt_constraints.primary_key
+
+  - name: dim_sales_territory
+    description: "Dimension table from salesteritory staging"
+    columns:
+      - name: sales_teritory_id
+        description: "Surrogate Key for sales_teritory"
+        tests:
+          - not_null
+          - dbt_constraints.primary_key
+
+      - name: nk_territory
+        description: "Natural Key for sales_teritory"
+        tests:
+          - not_null
+  - name: dim_sales_person
+    description: "Dimension table from salesperson staging"
+    columns:
+      - name: sales_person_id
+        description: "Surrogate Key for sales_person"
+        tests:
+          - not_null
+          - dbt_constraints.primary_key
+
+      - name: nk_sales_person
+        description: "Natural Key for sales_person"
+        tests:
+          - not_null
+      
+      - name: sales_teritory_id
+        description: "Foreign Key to sales_teritory"
+        tests:
+          - dbt_constraints.foreign_key:
+              pk_table_name: ref('dim_sales_territory')
+              pk_column_name: sales_teritory_id
+  - name: dim_store
+    description: "Dimension table from store staging"
+    columns:
+      - name: store_id
+        description: "Surrogate Key for store"
+        tests:
+          - not_null
+          - dbt_constraints.primary_key
+
+      - name: nk_store
+        description: "Natural Key for store"
+        tests:
+          - not_null
+      - name: sales_person_id
+        description: "Foreign Key to sales_person"
+        tests:
+          - dbt_constraints.foreign_key:
+              pk_table_name: ref('dim_sales_person')
+              pk_column_name: sales_person_id
+  - name: dim_customer
+    description: "Dimension table from customer staging"
+    columns:
+      - name: customer_id
+        description: "Surrogate Key for customer"
+        tests:
+          - not_null
+          - dbt_constraints.primary_key
+
+      - name: nk_customer
+        description: "Natural Key for customer"
+        tests:
+          - not_null
+      - name: store_id
+        description: "Foreign Key to store"
+        tests:
+          - dbt_constraints.foreign_key:
+              pk_table_name: ref('dim_store')
+              pk_column_name: store_id
+      - name: sales_teritory_id
+        description: "Foreign Key to sales_teritory"
+        tests:
+          - dbt_constraints.foreign_key:
+              pk_table_name: ref('dim_sales_territory')
+              pk_column_name: sales_teritory_id
+
+  - name: dim_ship_method
+    description: "Dimension table from shipmethod staging"
+    columns:
+      - name: ship_method_id
+        description: "Surrogate Key for ship_method"
+        tests:
+          - not_null
+          - dbt_constraints.primary_key
+
+      - name: nk_ship_method
+        description: "Natural Key for ship_method"
+        tests:
+          - not_null
+  - name: dim_special_offer
+    description: "Dimension table from specialoffer staging"
+    columns:
+      - name: special_offer_id
+        description: "Surrogate Key for special_offer"
+        tests:
+          - not_null
+          - dbt_constraints.primary_key
+
+      - name: nk_special_offer
+        description: "Natural Key for special_offer"
+        tests:
+          - not_null
+  - name: dim_sales_reason
+    description: "Dimension table from salesreason staging"
+    columns:
+      - name: sales_reason_id
+        description: "Surrogate Key for sales_reason"
+        tests:
+          - not_null
+          - dbt_constraints.primary_key
+          
+  - name: dim_currency_rate
+    description: "Dimension table from currencyrate staging"
+    columns:
+      - name: currency_rate_id
+        description: "Surrogate Key for currency_rate"
+        tests:
+          - not_null
+          - dbt_constraints.primary_key
+
+      - name: nk_currency_rate
+        description: "Natural Key for currency_rate"
+        tests:
+          - not_null
+      - name: from_currency_code
+        description: "Foreign Key to currency"
+        tests:
+          - dbt_constraints.foreign_key:
+              pk_table_name: ref('dim_currency')
+              pk_column_name: currency_code
+      - name: to_currency_code
+        description: "Foreign Key to currency"
+        tests:
+          - dbt_constraints.foreign_key:
+              pk_table_name: ref('dim_currency')
+              pk_column_name: currency_code
+  - name: fact_order
+    description: "Fact table from salesorderheader and salesorderdetail"
+    columns:
+      - name: sales_order_id
+        description: "Primary Key for fact_order"
+        tests:
+          - not_null
+          - dbt_constraints.primary_key
+      - name: order_date
+        description: "Order Date"
+        tests:
+          - dbt_constraints.foreign_key:
+              pk_table_name: ref('dim_date')
+              pk_column_name: date_id
+      - name: due_date
+        description: "Due Date"
+        tests:
+          - dbt_constraints.foreign_key:
+              pk_table_name: ref('dim_date')
+              pk_column_name: date_id
+      - name: ship_date
+        description: "Ship Date"
+        tests:
+          - dbt_constraints.foreign_key:
+              pk_table_name: ref('dim_date')
+              pk_column_name: date_id
+      - name: customer_id
+        description: "Foreign Key to customer"
+        tests:
+          - dbt_constraints.foreign_key:
+              pk_table_name: ref('dim_customer')
+              pk_column_name: customer_id
+      - name: ship_method_id
+        description: "Foreign Key to ship_method"
+        tests:
+          - dbt_constraints.foreign_key:
+              pk_table_name: ref('dim_ship_method')
+              pk_column_name: ship_method_id
+      - name: sales_person_id
+        description: "Foreign Key to sales_person"
+        tests:
+          - dbt_constraints.foreign_key:
+              pk_table_name: ref('dim_sales_person')
+              pk_column_name: sales_person_id
+      - name: sales_teritory_id
+        description: "Foreign Key to sales_teritory"
+        tests:
+          - dbt_constraints.foreign_key:
+              pk_table_name: ref('dim_sales_territory')
+              pk_column_name: sales_teritory_id
+      - name: special_offer_id
+        description: "Foreign Key to special_offer"
+        tests:
+          - dbt_constraints.foreign_key:
+              pk_table_name: ref('dim_special_offer')
+              pk_column_name: special_offer_id
+      - name: product_id
+        description: "Foreign Key to product"
+        tests:
+          - dbt_constraints.foreign_key:
+              pk_table_name: ref('dim_product')
+              pk_column_name: product_id
