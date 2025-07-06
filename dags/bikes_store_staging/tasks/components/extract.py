@@ -31,18 +31,19 @@ class Extract:
             pg_hook = PostgresHook(postgres_conn_id='bikes_store_db')
             connection = pg_hook.get_conn()
             cursor = connection.cursor()
+            table_pkey = kwargs.get('table_pkey')            
 
             query = ""
             if incremental:
                 date = kwargs['ds']
                 query = f"""
-                    SELECT * FROM bookings.{table_name}
+                    SELECT * FROM {table_pkey[table_name][0]}.{table_name}
                     WHERE created_at::DATE = '{date}'::DATE - INTERVAL '1 DAY' 
                     OR updated_at::DATE = '{date}'::DATE - INTERVAL '1 DAY' ;
                 """
                 object_name = f'/temp/{table_name}-{(pd.to_datetime(date) - timedelta(days=1)).strftime("%Y-%m-%d")}.csv'
             else:
-                query = f"SELECT * FROM bookings.{table_name};"
+                query = f"SELECT * FROM {table_pkey[table_name][0]}.{table_name};"
                 object_name = f'/temp/{table_name}.csv'
 
             logging.info(f"[Extract] Executing query: {query}")

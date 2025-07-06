@@ -34,7 +34,8 @@ render_config_init = RenderConfig(
 render_config = RenderConfig(
     dbt_executable_path="/opt/airflow/dbt_venv/bin/dbt",
     emit_datasets=True, 
-    test_behavior=TestBehavior.AFTER_ALL
+    test_behavior=TestBehavior.AFTER_ALL,
+    exclude=["dim_date"]
 )
 
 default_args = {
@@ -47,9 +48,9 @@ dag = DbtDag(
     schedule=None,
     start_date=datetime(2024, 9, 1),
     catchup=False,
-    # project_config=project_config,
-    # profile_config=profile_config,
-    # render_config=render_config,
+    project_config=project_config,
+    profile_config=profile_config,
+    render_config=render_config,
     default_args=default_args
 )
 
@@ -57,7 +58,7 @@ def bikes_store_warehouse():
     @task.branch(dag=dag)
     def check_is_warehouse_init():
         is_init = Variable.get("BIKES_STORE_WAREHOUSE_INIT", default_var="False").lower()
-        return "warehouse" if is_init == "true" else "warehouse_init"
+        return "warehouse" if is_init == "false" else "warehouse_init"
 
     def warehouse_init():
         return DbtTaskGroup(
