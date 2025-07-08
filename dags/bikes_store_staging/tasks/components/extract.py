@@ -10,7 +10,7 @@ from datetime import timedelta
 
 class Extract:
     @staticmethod
-    def _bikes_store_db(table_name, incremental, **kwargs):
+    def _bikes_store(schema, table_name, incremental, **kwargs):
         """
         Extract all data from Pacflight database (non-incremental).
 
@@ -31,20 +31,19 @@ class Extract:
             pg_hook = PostgresHook(postgres_conn_id='bikes_store_db')
             connection = pg_hook.get_conn()
             cursor = connection.cursor()
-            table_pkey = kwargs.get('table_pkey')            
 
             query = ""
             if incremental:
                 date = kwargs['ds']
                 query = f"""
-                    SELECT * FROM {table_pkey[table_name][0]}.{table_name}
+                    SELECT * FROM {schema}.{table_name}
                     WHERE created_at::DATE = '{date}'::DATE - INTERVAL '1 DAY' 
                     OR updated_at::DATE = '{date}'::DATE - INTERVAL '1 DAY' ;
                 """
                 object_name = f'/temp/{table_name}-{(pd.to_datetime(date) - timedelta(days=1)).strftime("%Y-%m-%d")}.csv'
             else:
                 query = f"SELECT * FROM {table_pkey[table_name][0]}.{table_name};"
-                object_name = f'/temp/{table_name}.csv'
+                object_name = f'/temp/source/db/{table_name}.csv'
 
             logging.info(f"[Extract] Executing query: {query}")
             cursor.execute(query)
@@ -99,7 +98,7 @@ class Extract:
                 raise AirflowSkipException("No new data in Bikes Store API. Skipped...")
 
             bucket_name = 'bikes-store'
-            object_name = f'/temp/bikes_store_api_{(pd.to_datetime(ds) - timedelta(days=1)).strftime("%Y-%m-%d")}.json'
+            object_name = f'/temp/source/api/bikes_store_api_{(pd.to_datetime(ds) - timedelta(days=1)).strftime("%Y-%m-%d")}.json'
             CustomMinio._put_json(json_data, bucket_name, object_name)
         
         except AirflowSkipException as e:
